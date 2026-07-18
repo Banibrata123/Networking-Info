@@ -1,0 +1,11 @@
+{
+  "projectId": "networking-info",
+  "appId": "1:430062571857:web:f1dd844681e910d82b0370",
+  "apiKey": "AIzaSyDysN49clA4VXRR9HlJbEuYQc2eqK-2Koc",
+  "authDomain": "networking-info.firebaseapp.com",
+  "firestoreDatabaseId": "ai-studio-networkinginfo-f9e6f5be-479c-46bd-918b-055d34fb6362",
+  "storageBucket": "networking-info.firebasestorage.app",
+  "messagingSenderId": "430062571857",
+  "measurementId": "",
+  "oAuthClientId": "430062571857-6gdj17avg7if0v8dk1v465i6j47rvali.apps.googleusercontent.com"
+}

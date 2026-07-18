@@ -1,0 +1,40 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if the user is an Administrator
+    function isAdmin() {
+      return request.auth != null && (
+        request.auth.token.email == 'banibratamajumder18@gmail.com' ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'Admin')
+      );
+    }
+
+    // Match users collection
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && (request.auth.uid == userId || isAdmin());
+    }
+
+    // Match networking_incidents collection
+    match /networking_incidents/{incidentId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // Match user_logs collection
+    match /user_logs/{logId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // Match audit_logs collection
+    match /audit_logs/{auditId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // Match global_settings collection
+    match /global_settings/{settingId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && isAdmin();
+    }
+  }
+}

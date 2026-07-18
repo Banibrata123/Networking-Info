@@ -1,0 +1,6 @@
+{
+  "name": "Networking Info",
+  "description": "Interactive single-page dashboard architecture for tracking network incidents, field engineer dockets, feedback calls, unlink routers, complaints, reports, and tech updates.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

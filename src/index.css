@@ -1,0 +1,191 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+/* Accessibility Dark Mode CSS overrides */
+.dark-theme {
+  --bg-main: #090d16; /* Slate-950 equivalent */
+  --bg-card: #111827; /* Slate-900 equivalent */
+  --bg-alt: #1f2937; /* Slate-800 equivalent */
+  --bg-input: #0b0f19; /* Slightly darker */
+  --border-color: #374151; /* Gray-700 equivalent */
+  --text-primary: #f9fafb; /* Gray-50 equivalent */
+  --text-secondary: #d1d5db; /* Gray-300 equivalent */
+  --text-muted: #9ca3af; /* Gray-400 equivalent */
+}
+
+/* Base override */
+.dark-theme {
+  background-color: var(--bg-main) !important;
+  color: var(--text-primary) !important;
+}
+
+/* Force dark styling on cards, tables, panels */
+.dark-theme .bg-white,
+.dark-theme .bg-slate-50,
+.dark-theme .bg-slate-50\/50,
+.dark-theme .bg-slate-50\/30,
+.dark-theme .bg-slate-100,
+.dark-theme .bg-slate-100\/50,
+.dark-theme .bg-slate-100\/30,
+.dark-theme .bg-indigo-50\/50,
+.dark-theme .bg-violet-50\/50,
+.dark-theme .bg-sky-50\/50,
+.dark-theme .bg-amber-50\/50,
+.dark-theme .bg-rose-50\/50,
+.dark-theme .bg-emerald-50\/50,
+.dark-theme .bg-teal-50\/50 {
+  background-color: var(--bg-card) !important;
+}
+
+/* Hover overrides */
+.dark-theme .hover\:bg-slate-50\/50:hover,
+.dark-theme .hover\:bg-slate-50:hover,
+.dark-theme .hover\:bg-slate-100:hover,
+.dark-theme .hover\:bg-slate-100\/50:hover,
+.dark-theme .hover\:bg-indigo-50\/50:hover,
+.dark-theme .hover\:bg-violet-50\/50:hover,
+.dark-theme .hover\:bg-sky-50\/50:hover,
+.dark-theme .hover\:bg-amber-50\/50:hover,
+.dark-theme .hover\:bg-rose-50\/50:hover,
+.dark-theme .hover\:bg-emerald-50\/50:hover,
+.dark-theme .hover\:bg-teal-50\/50:hover {
+  background-color: var(--bg-alt) !important;
+}
+
+/* Border overrides */
+.dark-theme .border-slate-200,
+.dark-theme .border-slate-200\/60,
+.dark-theme .border-slate-100,
+.dark-theme .border-slate-100\/60,
+.dark-theme .border-slate-100\/80,
+.dark-theme .border-transparent,
+.dark-theme .divide-slate-100\/60 > *,
+.dark-theme .divide-slate-200 > * {
+  border-color: var(--border-color) !important;
+}
+
+/* Text overrides */
+.dark-theme .text-slate-800,
+.dark-theme .text-slate-700,
+.dark-theme .text-slate-900,
+.dark-theme .text-slate-950,
+.dark-theme .text-indigo-950 {
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .text-slate-600,
+.dark-theme .text-slate-500,
+.dark-theme .text-slate-700 {
+  color: var(--text-secondary) !important;
+}
+
+.dark-theme .text-slate-400 {
+  color: var(--text-muted) !important;
+}
+
+/* Form inputs & interactive fields */
+.dark-theme input,
+.dark-theme select,
+.dark-theme textarea {
+  background-color: var(--bg-input) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme input::placeholder,
+.dark-theme select::placeholder,
+.dark-theme textarea::placeholder {
+  color: var(--text-muted) !important;
+}
+
+.dark-theme input:focus,
+.dark-theme select:focus,
+.dark-theme textarea:focus {
+  border-color: #6366f1 !important; /* Indigo-500 focus indicator */
+}
+
+/* Table elements */
+.dark-theme th {
+  background-color: var(--bg-alt) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-color) !important;
+}
+
+.dark-theme td {
+  border-color: var(--border-color) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* Modals & Dialog blocks */
+.dark-theme #global-search-modal,
+.dark-theme [id$="-modal"],
+.dark-theme [id$="-dialog"],
+.dark-theme .modal-content,
+.dark-theme div[role="dialog"] {
+  background-color: var(--bg-card) !important;
+  border-color: var(--border-color) !important;
+  color: var(--text-primary) !important;
+}
+
+.dark-theme .bg-slate-50 {
+  background-color: var(--bg-alt) !important;
+}
+
+/* Keep accent colors readable but soften them for dark backgrounds if necessary */
+.dark-theme .text-rose-600 {
+  color: #fb7185 !important; /* softer rose-400 */
+}
+.dark-theme .text-violet-600 {
+  color: #c084fc !important; /* softer violet-400 */
+}
+.dark-theme .text-sky-600 {
+  color: #38bdf8 !important; /* softer sky-400 */
+}
+.dark-theme .text-amber-600 {
+  color: #fbbf24 !important; /* softer amber-400 */
+}
+.dark-theme .text-emerald-600 {
+  color: #34d399 !important; /* softer emerald-400 */
+}
+.dark-theme .text-indigo-600 {
+  color: #818cf8 !important; /* softer indigo-400 */
+}
+
+/* Soften light-colored labels and tags */
+.dark-theme .bg-rose-50,
+.dark-theme .bg-violet-50,
+.dark-theme .bg-sky-50,
+.dark-theme .bg-amber-50,
+.dark-theme .bg-emerald-50,
+.dark-theme .bg-indigo-50 {
+  background-color: rgba(99, 102, 241, 0.1) !important; /* soft dark blue transparent */
+}
+
+/* Toast message background adjust for dark theme */
+.dark-theme #toast-notification {
+  background-color: #1f2937 !important;
+  border-color: #4b5563 !important;
+}
+
+/* Custom Slide-Up Entrance Animation */
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+

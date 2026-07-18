@@ -1,0 +1,101 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User account information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "username": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["Admin", "Standard"] },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "username", "email", "role"]
+    },
+    "NetworkIncident": {
+      "title": "Network Incident",
+      "description": "A recorded network outage or incident",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "date": { "type": "string" },
+        "downtime": { "type": "string" },
+        "uptime": { "type": "string" },
+        "type": { "type": "string", "enum": ["Switch", "NAS", "OLT", "Zone", "Major Issue"] },
+        "identifier": { "type": "string" },
+        "zoneCode": { "type": "string" },
+        "pop": { "type": "string" },
+        "problem": { "type": "string" },
+        "status": { "type": "string", "enum": ["Open", "Closed"] },
+        "addedBy": { "type": "string" }
+      },
+      "required": ["id", "date", "downtime", "uptime", "type", "problem", "status", "addedBy"]
+    },
+    "UserLog": {
+      "title": "User Activity Log",
+      "description": "Daily user first login and last logout time",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "email": { "type": "string" },
+        "username": { "type": "string" },
+        "date": { "type": "string" },
+        "firstLogin": { "type": "string" },
+        "lastLogout": { "type": "string" }
+      },
+      "required": ["id", "email", "username", "date", "firstLogin", "lastLogout"]
+    },
+    "GlobalSetting": {
+      "title": "Global Setting",
+      "description": "App-wide global configuration settings, such as Google Sheets integration sync state",
+      "type": "object",
+      "properties": {
+        "spreadsheetId": { "type": "string" },
+        "linked": { "type": "boolean" },
+        "googleToken": { "type": "string" },
+        "googleUserEmail": { "type": "string" },
+        "linkedBy": { "type": "string" },
+        "linkedAt": { "type": "string" }
+      }
+    },
+    "AuditLog": {
+      "title": "Audit Log",
+      "description": "System audit logs for user actions (create, update, delete)",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userId": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "username": { "type": "string" },
+        "action": { "type": "string", "enum": ["CREATE", "UPDATE", "DELETE", "LINK", "UNLINK"] },
+        "category": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["id", "userId", "userEmail", "username", "action", "category", "details", "timestamp"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User profiles"
+    },
+    "networking_incidents/{incidentId}": {
+      "schema": "NetworkIncident",
+      "description": "Network incidents list"
+    },
+    "user_logs/{logId}": {
+      "schema": "UserLog",
+      "description": "User daily login/logout activity logs"
+    },
+    "global_settings/{settingId}": {
+      "schema": "GlobalSetting",
+      "description": "Global settings and configurations"
+    },
+    "audit_logs/{auditId}": {
+      "schema": "AuditLog",
+      "description": "System audit logs of supervisor actions"
+    }
+  }
+}
