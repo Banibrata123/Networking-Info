@@ -838,8 +838,8 @@ export default function AdminPortalView({
 
         {/* RIGHT COLUMN: REGISTERED USER DIRECTORY LOG */}
         <div className="lg:col-span-8">
-          <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-md transition-all duration-200 p-6 overflow-hidden">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-5">
+          <div className="bg-white rounded-2xl border border-slate-200/60 shadow-sm hover:shadow-md transition-all duration-200 p-4 sm:p-6 overflow-hidden">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4 mb-5">
               <div className="flex items-center gap-2">
                 <div className="bg-emerald-50 p-2 rounded-lg">
                   {activeTab === 'analytics' ? (
@@ -865,54 +865,56 @@ export default function AdminPortalView({
                   </p>
                 </div>
               </div>
-              <div className="flex flex-wrap items-center gap-3 self-start sm:self-auto">
-                <button
-                  onClick={handleExportAllData}
-                  disabled={exportingAllData}
-                  className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white text-xs font-bold rounded-xl shadow-sm hover:shadow-md transition-all active:scale-[0.98]"
-                  id="export-all-data-btn"
-                  title="Export live system data from all pages/tabs to a single CSV file"
-                >
-                  {exportingAllData ? (
-                    <div className="animate-spin h-3.5 w-3.5 border-2 border-white border-t-transparent rounded-full" />
-                  ) : (
-                    <Download className="w-3.5 h-3.5" />
-                  )}
-                  <span>{exportingAllData ? 'Exporting All...' : 'Export Data'}</span>
-                </button>
-
-                {activeTab === 'logs' && (
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto" id="admin-actions-tab-container">
+                <div className="flex flex-wrap items-center gap-2" id="export-buttons-group">
                   <button
-                    onClick={handleExportAuditLogs}
-                    disabled={exportingLogs}
-                    className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white text-xs font-bold rounded-xl shadow-sm hover:shadow-md transition-all active:scale-[0.98]"
-                    id="export-audit-logs-btn"
-                    title="Export Audit Logs from Google Sheets/Firestore to CSV"
+                    onClick={handleExportAllData}
+                    disabled={exportingAllData}
+                    className="cursor-pointer inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-400 text-white text-xs font-bold rounded-xl shadow-sm hover:shadow-md transition-all active:scale-[0.98] grow sm:grow-0"
+                    id="export-all-data-btn"
+                    title="Export live system data from all pages/tabs to a single CSV file"
                   >
-                    {exportingLogs ? (
+                    {exportingAllData ? (
                       <div className="animate-spin h-3.5 w-3.5 border-2 border-white border-t-transparent rounded-full" />
                     ) : (
                       <Download className="w-3.5 h-3.5" />
                     )}
-                    <span>{exportingLogs ? 'Exporting...' : 'Export Session Logs'}</span>
+                    <span>{exportingAllData ? 'Exporting All...' : 'Export Data'}</span>
                   </button>
-                )}
 
-                {activeTab === 'audit' && (
-                  <button
-                    onClick={handleExportSystemAuditLogs}
-                    className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm hover:shadow-md transition-all active:scale-[0.98]"
-                    id="export-system-audit-logs-btn"
-                    title="Export system audit logs to CSV"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>Export Audit Logs</span>
-                  </button>
-                )}
-                <div className="flex items-center bg-slate-100/80 p-1 rounded-xl border border-slate-200/50">
+                  {activeTab === 'logs' && (
+                    <button
+                      onClick={handleExportAuditLogs}
+                      disabled={exportingLogs}
+                      className="cursor-pointer inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white text-xs font-bold rounded-xl shadow-sm hover:shadow-md transition-all active:scale-[0.98] grow sm:grow-0"
+                      id="export-audit-logs-btn"
+                      title="Export Audit Logs from Google Sheets/Firestore to CSV"
+                    >
+                      {exportingLogs ? (
+                        <div className="animate-spin h-3.5 w-3.5 border-2 border-white border-t-transparent rounded-full" />
+                      ) : (
+                        <Download className="w-3.5 h-3.5" />
+                      )}
+                      <span>{exportingLogs ? 'Exporting...' : 'Export Session Logs'}</span>
+                    </button>
+                  )}
+
+                  {activeTab === 'audit' && (
+                    <button
+                      onClick={handleExportSystemAuditLogs}
+                      className="cursor-pointer inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-sm hover:shadow-md transition-all active:scale-[0.98] grow sm:grow-0"
+                      id="export-system-audit-logs-btn"
+                      title="Export system audit logs to CSV"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Export Audit Logs</span>
+                    </button>
+                  )}
+                </div>
+                <div className="flex items-center bg-slate-100/80 p-1 rounded-xl border border-slate-200/50 overflow-x-auto max-w-full w-full lg:w-auto whitespace-nowrap [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" id="admin-portal-tabs-container">
                   <button
                     onClick={() => setActiveTab('analytics')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0 grow sm:grow-0 ${
                       activeTab === 'analytics'
                         ? 'bg-white text-slate-900 shadow-sm'
                         : 'text-slate-500 hover:text-slate-800'
@@ -923,7 +925,7 @@ export default function AdminPortalView({
                   </button>
                   <button
                     onClick={() => setActiveTab('directory')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0 grow sm:grow-0 ${
                       activeTab === 'directory'
                         ? 'bg-white text-slate-900 shadow-sm'
                         : 'text-slate-500 hover:text-slate-800'
@@ -934,7 +936,7 @@ export default function AdminPortalView({
                   </button>
                   <button
                     onClick={() => setActiveTab('logs')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0 grow sm:grow-0 ${
                       activeTab === 'logs'
                         ? 'bg-white text-slate-900 shadow-sm'
                         : 'text-slate-500 hover:text-slate-800'
@@ -945,7 +947,7 @@ export default function AdminPortalView({
                   </button>
                   <button
                     onClick={() => setActiveTab('audit')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0 grow sm:grow-0 ${
                       activeTab === 'audit'
                         ? 'bg-white text-slate-900 shadow-sm'
                         : 'text-slate-500 hover:text-slate-800'
