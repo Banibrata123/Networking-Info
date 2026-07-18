@@ -141,6 +141,8 @@ export default function AdminPortalView({
   // Clearing Old Logs states
   const [isConfirmClearOpen, setIsConfirmClearOpen] = useState(false);
   const [isClearingLogs, setIsClearingLogs] = useState(false);
+  const [isConfirmClearAllOpen, setIsConfirmClearAllOpen] = useState(false);
+  const [isClearingAllLogs, setIsClearingAllLogs] = useState(false);
 
   // Compute unique emails from audit logs
   const uniqueEmails = useMemo(() => {
@@ -208,6 +210,39 @@ export default function AdminPortalView({
       showToast('Failed to clear old logs', 'error');
     } finally {
       setIsClearingLogs(false);
+    }
+  };
+
+  // Handle deleting all audit logs manually
+  const handleClearAllLogs = async () => {
+    setIsConfirmClearAllOpen(false);
+    setIsClearingAllLogs(true);
+    try {
+      if (auditLogs.length === 0) {
+        showToast('No logs found to clear', 'info');
+        setIsClearingAllLogs(false);
+        return;
+      }
+
+      // Delete all the logs from Firestore
+      const deletePromises = auditLogs.map((log) =>
+        deleteDoc(doc(db, 'audit_logs', log.id))
+      );
+      await Promise.all(deletePromises);
+
+      // Log this deletion itself as a new audit log
+      await onWriteAuditLog(
+        'DELETE',
+        'AuditLogs',
+        `Manually cleared all ${auditLogs.length} audit logs`
+      );
+
+      showToast(`Successfully cleared all ${auditLogs.length} audit logs`, 'success');
+    } catch (error) {
+      console.error('Error clearing all logs:', error);
+      showToast('Failed to clear all logs', 'error');
+    } finally {
+      setIsClearingAllLogs(false);
     }
   };
 
@@ -1241,16 +1276,29 @@ export default function AdminPortalView({
                       </div>
 
                       {currentUser.role === 'Admin' && (
-                        <button
-                          onClick={() => setIsConfirmClearOpen(true)}
-                          disabled={isClearingLogs}
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 text-white text-[10px] font-bold rounded-lg cursor-pointer transition-colors shadow-xs"
-                          id="clear-old-logs-btn"
-                          type="button"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                          <span>{isClearingLogs ? 'Clearing...' : 'Clear Logs > 60 Days'}</span>
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setIsConfirmClearOpen(true)}
+                            disabled={isClearingLogs || isClearingAllLogs}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-600 hover:bg-rose-700 disabled:bg-rose-300 text-white text-[10px] font-bold rounded-lg cursor-pointer transition-colors shadow-xs"
+                            id="clear-old-logs-btn"
+                            type="button"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            <span>{isClearingLogs ? 'Clearing...' : 'Clear Logs > 60 Days'}</span>
+                          </button>
+
+                          <button
+                            onClick={() => setIsConfirmClearAllOpen(true)}
+                            disabled={isClearingLogs || isClearingAllLogs}
+                            className="flex items-center gap-1.5 px-3 py-1.5 bg-rose-800 hover:bg-rose-900 disabled:bg-rose-300 text-white text-[10px] font-bold rounded-lg cursor-pointer transition-colors shadow-xs"
+                            id="clear-all-logs-btn"
+                            type="button"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            <span>{isClearingAllLogs ? 'Clearing All...' : 'Clear All Logs'}</span>
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -1444,6 +1492,18 @@ export default function AdminPortalView({
         cancelText="Cancel"
         onConfirm={handleClearOldLogs}
         onClose={() => setIsConfirmClearOpen(false)}
+        isDestructive={true}
+      />
+
+      {/* Confirmation Modal for Manually Clearing All Logs */}
+      <ConfirmationModal
+        isOpen={isConfirmClearAllOpen}
+        title="Clear All Audit Logs?"
+        message="Are you sure you want to delete ALL audit logs from the database? This action is permanent and cannot be undone."
+        confirmText="Yes, Clear All Logs"
+        cancelText="Cancel"
+        onConfirm={handleClearAllLogs}
+        onClose={() => setIsConfirmClearAllOpen(false)}
         isDestructive={true}
       />
     </div>
