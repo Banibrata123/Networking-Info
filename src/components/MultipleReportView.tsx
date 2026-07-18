@@ -754,7 +754,7 @@ export default function MultipleReportView({
                             >
                               <Edit3 className="w-4 h-4" />
                             </button>
-                            {currentUser?.role === 'Admin' && onDeleteWa && (
+                            {(currentUser?.role === 'Admin' || item.addedBy === currentUser?.username) && onDeleteWa && (
                               <div className="flex items-center gap-1" id={`delete-wa-container-${item.id}`}>
                                 {waDeletingId === item.id ? (
                                   <div className="flex items-center gap-1 bg-rose-50 border border-rose-200 rounded-md p-1 animate-fade-in" id={`delete-wa-confirm-box-${item.id}`}>
@@ -983,7 +983,7 @@ export default function MultipleReportView({
                             >
                               <Edit3 className="w-4 h-4" />
                             </button>
-                            {currentUser?.role === 'Admin' && onDeleteCyber && (
+                            {(currentUser?.role === 'Admin' || item.addedBy === currentUser?.username) && onDeleteCyber && (
                               <div className="flex items-center gap-1" id={`delete-cy-container-${item.id}`}>
                                 {cyDeletingId === item.id ? (
                                   <div className="flex items-center gap-1 bg-rose-50 border border-rose-200 rounded-md p-1 animate-fade-in" id={`delete-cy-confirm-box-${item.id}`}>
@@ -1290,7 +1290,7 @@ export default function MultipleReportView({
                                 >
                                   <Edit3 className="w-4 h-4" />
                                 </button>
-                              {currentUser?.role === 'Admin' && onDeleteMail && (
+                              {(currentUser?.role === 'Admin' || item.addedBy === currentUser?.username) && onDeleteMail && (
                                 <div className="flex items-center gap-1" id={`delete-ma-container-${item.id}`}>
                                   {maDeletingId === item.id ? (
                                     <div className="flex items-center gap-1 bg-rose-50 border border-rose-200 rounded-md p-1 animate-fade-in" id={`delete-ma-confirm-box-${item.id}`}>

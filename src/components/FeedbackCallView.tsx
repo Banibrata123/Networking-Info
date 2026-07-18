@@ -842,7 +842,7 @@ export default function FeedbackCallView({ feedbacks, onAdd, onUpdate, onDelete,
                         >
                           <Edit3 className="w-4 h-4" />
                         </button>
-                        {currentUser?.role === 'Admin' && onDelete && (
+                        {(currentUser?.role === 'Admin' || item.addedBy === currentUser?.username) && onDelete && (
                           <div className="flex items-center gap-1" id={`delete-action-container-${item.id}`}>
                             {deletingId === item.id ? (
                               <div className="flex items-center gap-1 bg-rose-50 border border-rose-200 rounded-md p-1 animate-fade-in" id={`delete-confirm-box-${item.id}`}>

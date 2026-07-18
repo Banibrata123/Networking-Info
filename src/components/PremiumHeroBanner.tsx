@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, ArrowRight, ChevronLeft, ChevronRight, Zap, Cpu, Users } from 'lucide-react';
+import { Sparkles, ArrowRight, ChevronLeft, ChevronRight, Zap, Cpu, Users, ExternalLink } from 'lucide-react';
+import AnimatedNetworkBackground from './AnimatedNetworkBackground';
 
 interface PremiumHeroBannerProps {
   setCurrentView?: (view: string) => void;
@@ -136,126 +137,8 @@ export default function PremiumHeroBanner({ setCurrentView }: PremiumHeroBannerP
           className={`absolute inset-0 w-full h-full flex flex-col justify-center items-center px-6 md:px-12 text-center border rounded-2xl ${currentItem.containerClass}`}
           id={`premium-hero-slide-${currentItem.id}`}
         >
-          {/* BACKGROUND VECTOR DECORATIONS BASED ON PREMIUM THEME */}
-          
-          {/* Slide 1 Decor: FLUID FLOWING WAVES */}
-          {currentItem.hasWaves && (
-            <div className="absolute inset-0 overflow-hidden pointer-events-none -z-10 opacity-40">
-              <svg className="absolute w-full h-full" viewBox="0 0 1440 600" preserveAspectRatio="none">
-                <motion.path
-                  animate={{
-                    d: [
-                      'M0,224 C288,160 576,288 864,224 C1152,160 1296,288 1440,256 L1440,600 L0,600 Z',
-                      'M0,256 C288,288 576,160 864,224 C1152,288 1296,160 1440,192 L1440,600 L0,600 Z',
-                      'M0,224 C288,160 576,288 864,224 C1152,160 1296,288 1440,256 L1440,600 L0,600 Z'
-                    ]
-                  }}
-                  transition={{ duration: 18.75, repeat: Infinity, ease: 'easeInOut' }}
-                  fill="rgba(6, 182, 212, 0.1)"
-                />
-              </svg>
-            </div>
-          )}
-
-          {/* Slide 2 Decor: GIGABIT BACKBONE CIRCUIT */}
-          {currentItem.hasCircuit && (
-            <>
-              {/* Ambient lighting blobs */}
-              <div className="absolute right-0 top-0 w-96 h-96 bg-gradient-to-bl from-indigo-500/15 via-violet-500/10 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
-              <div className="absolute left-1/3 bottom-0 w-72 h-72 bg-gradient-to-tr from-sky-500/10 via-indigo-500/5 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
-              
-              {/* Interactive circuit paths */}
-              <div className="absolute right-10 bottom-0 top-0 w-1/3 opacity-20 pointer-events-none hidden lg:block -z-10">
-                <svg className="w-full h-full text-indigo-400" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <motion.path 
-                    d="M10 50H80L110 80H190" 
-                    stroke="currentColor" 
-                    strokeWidth="1.5" 
-                    strokeLinecap="round" 
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 2.5, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
-                  />
-                  <motion.path 
-                    d="M30 110H90L110 130H170" 
-                    stroke="currentColor" 
-                    strokeWidth="1.5" 
-                    strokeLinecap="round"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
-                    transition={{ duration: 3, delay: 0.5, repeat: Infinity, repeatType: "reverse", ease: "easeInOut" }}
-                  />
-                  <circle cx="80" cy="50" r="3.5" fill="currentColor" />
-                  <circle cx="110" cy="80" r="3.5" fill="currentColor" />
-                  <circle cx="90" cy="110" r="3.5" fill="currentColor" />
-                  <circle cx="110" cy="130" r="3.5" fill="currentColor" />
-                  <circle cx="190" cy="80" r="4.5" stroke="currentColor" strokeWidth="1.5" />
-                  <circle cx="170" cy="130" r="4.5" stroke="currentColor" strokeWidth="1.5" />
-                </svg>
-              </div>
-            </>
-          )}
-
-          {/* Slide 3 Decor: AUTONOMIC INTELLIGENCE ORBITS */}
-          {currentItem.hasOrbits && (
-            <>
-              {/* Ambient lighting blobs */}
-              <div className="absolute right-10 bottom-10 w-96 h-96 bg-gradient-to-tr from-amber-500/10 via-rose-500/5 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
-              <div className="absolute left-10 top-10 w-80 h-80 bg-gradient-to-br from-orange-500/10 via-red-500/5 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
-              
-              {/* Orbiting concentric nodes */}
-              <div className="absolute right-12 bottom-0 top-0 w-1/3 opacity-25 pointer-events-none hidden lg:block -z-10">
-                <svg className="w-full h-full text-amber-500" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="100" cy="100" r="70" stroke="currentColor" strokeWidth="0.75" strokeDasharray="4 4" />
-                  <motion.circle 
-                    cx="100" cy="100" r="45" 
-                    stroke="currentColor" 
-                    strokeWidth="1" 
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 16, repeat: Infinity, ease: "linear" }}
-                    style={{ transformOrigin: "100px 100px" }}
-                  />
-                  <circle cx="100" cy="100" r="20" stroke="currentColor" strokeWidth="1.5" />
-                  <circle cx="100" cy="30" r="4" fill="#F59E0B" />
-                  <circle cx="100" cy="170" r="4" fill="#EF4444" />
-                  <motion.circle 
-                    cx="145" cy="100" r="5" 
-                    fill="#F59E0B"
-                    animate={{ scale: [1, 1.4, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                  />
-                </svg>
-              </div>
-            </>
-          )}
-
-          {/* Slide 4 Decor: SECURE COLLABORATIVE WORKSPACE GRID */}
-          {currentItem.hasGrid && (
-            <>
-              {/* Ambient lighting blobs */}
-              <div className="absolute right-0 bottom-0 w-96 h-96 bg-gradient-to-tr from-emerald-500/15 via-teal-500/5 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
-              <div className="absolute left-1/4 top-1/4 w-80 h-80 bg-gradient-to-br from-teal-500/10 via-indigo-500/5 to-transparent rounded-full blur-3xl pointer-events-none -z-10" />
-              
-              {/* Isometric connected hub network */}
-              <div className="absolute right-16 bottom-0 top-0 w-1/3 opacity-20 pointer-events-none hidden lg:block -z-10">
-                <svg className="w-full h-full text-emerald-400" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M20 40 L60 90 L120 70 L180 120" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" />
-                  <path d="M60 90 L110 150 L150 110" stroke="currentColor" strokeWidth="1" />
-                  <circle cx="20" cy="40" r="4" fill="currentColor" />
-                  <circle cx="60" cy="90" r="4" fill="currentColor" />
-                  <circle cx="120" cy="70" r="4" fill="currentColor" />
-                  <circle cx="180" cy="120" r="4" fill="currentColor" />
-                  <circle cx="110" cy="150" r="4" fill="currentColor" />
-                  <motion.circle 
-                    cx="150" cy="110" r="6" 
-                    fill="currentColor"
-                    animate={{ opacity: [0.3, 0.8, 0.3], scale: [1, 1.2, 1] }}
-                    transition={{ duration: 3.5, repeat: Infinity }}
-                  />
-                </svg>
-              </div>
-            </>
-          )}
+          {/* HIGH-FIDELITY ANIMATED LIVE NETWORK BACKGROUND */}
+          <AnimatedNetworkBackground type={currentItem.id as any} />
 
           {/* CONTENT PANEL */}
           <div className="relative z-10 max-w-2xl flex flex-col items-center">

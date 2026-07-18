@@ -660,7 +660,7 @@ export default function ComplaintManagementView({ complaints, onAdd, onUpdate, o
                         >
                           <Edit3 className="w-4 h-4" />
                         </button>
-                        {currentUser?.role === 'Admin' && onDelete && (
+                        {(currentUser?.role === 'Admin' || item.addedBy === currentUser?.username) && onDelete && (
                           <div className="flex items-center gap-1" id={`delete-action-container-${item.id}`}>
                             {deletingId === item.id ? (
                               <div className="flex items-center gap-1 bg-rose-50 border border-rose-200 rounded-md p-1 animate-fade-in" id={`delete-confirm-box-${item.id}`}>
@@ -788,7 +788,7 @@ export default function ComplaintManagementView({ complaints, onAdd, onUpdate, o
                     <span>Edit</span>
                   </button>
 
-                  {currentUser?.role === 'Admin' && onDelete && (
+                  {(currentUser?.role === 'Admin' || item.addedBy === currentUser?.username) && onDelete && (
                     <div className="relative" id={`delete-mob-container-${item.id}`}>
                       {deletingId === item.id ? (
                         <div className="flex items-center gap-1 bg-rose-50 border border-rose-200 rounded-lg p-1 animate-fade-in" id={`delete-mob-confirm-box-${item.id}`}>

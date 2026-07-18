@@ -104,7 +104,10 @@ import {
   Search,
   Sun,
   Moon,
-  RefreshCw
+  RefreshCw,
+  ExternalLink,
+  Globe,
+  Monitor
 } from 'lucide-react';
 
 export default function App() {
@@ -1597,8 +1600,10 @@ export default function App() {
 
   // --- 7.5 GENERIC STATE DELETERS ---
   const handleDeleteIncident = (id: string) => {
-    if (session?.role !== 'Admin') {
-      showToast('Unauthorized: Only Administrators can delete records.', 'error');
+    const item = incidents.find((x) => x.id === id);
+    const isOwner = item && session && item.addedBy === session.username;
+    if (session?.role !== 'Admin' && !isOwner) {
+      showToast('Unauthorized: Only Administrators or the record creator can delete records.', 'error');
       return;
     }
     requestDeleteConfirm(
@@ -1627,8 +1632,10 @@ export default function App() {
   };
 
   const handleDeleteDocket = (id: string) => {
-    if (session?.role !== 'Admin') {
-      showToast('Unauthorized: Only Administrators can delete records.', 'error');
+    const item = dockets.find((x) => x.id === id);
+    const isOwner = item && session && item.addedBy === session.username;
+    if (session?.role !== 'Admin' && !isOwner) {
+      showToast('Unauthorized: Only Administrators or the record creator can delete records.', 'error');
       return;
     }
     requestDeleteConfirm(
@@ -1644,8 +1651,10 @@ export default function App() {
   };
 
   const handleDeleteFeedback = (id: string) => {
-    if (session?.role !== 'Admin') {
-      showToast('Unauthorized: Only Administrators can delete records.', 'error');
+    const item = feedbacks.find((x) => x.id === id);
+    const isOwner = item && session && item.addedBy === session.username;
+    if (session?.role !== 'Admin' && !isOwner) {
+      showToast('Unauthorized: Only Administrators or the record creator can delete records.', 'error');
       return;
     }
     requestDeleteConfirm(
@@ -1661,8 +1670,10 @@ export default function App() {
   };
 
   const handleDeleteRouter = (id: string) => {
-    if (session?.role !== 'Admin') {
-      showToast('Unauthorized: Only Administrators can delete records.', 'error');
+    const item = routers.find((x) => x.id === id);
+    const isOwner = item && session && item.addedBy === session.username;
+    if (session?.role !== 'Admin' && !isOwner) {
+      showToast('Unauthorized: Only Administrators or the record creator can delete records.', 'error');
       return;
     }
     requestDeleteConfirm(
@@ -1678,8 +1689,10 @@ export default function App() {
   };
 
   const handleDeleteComplaint = (id: string) => {
-    if (session?.role !== 'Admin') {
-      showToast('Unauthorized: Only Administrators can delete records.', 'error');
+    const item = complaints.find((x) => x.id === id);
+    const isOwner = item && session && item.addedBy === session.username;
+    if (session?.role !== 'Admin' && !isOwner) {
+      showToast('Unauthorized: Only Administrators or the record creator can delete records.', 'error');
       return;
     }
     requestDeleteConfirm(
@@ -1695,8 +1708,10 @@ export default function App() {
   };
 
   const handleDeleteWaReport = (id: string) => {
-    if (session?.role !== 'Admin') {
-      showToast('Unauthorized: Only Administrators can delete records.', 'error');
+    const item = waReports.find((x) => x.id === id);
+    const isOwner = item && session && item.addedBy === session.username;
+    if (session?.role !== 'Admin' && !isOwner) {
+      showToast('Unauthorized: Only Administrators or the record creator can delete records.', 'error');
       return;
     }
     requestDeleteConfirm(
@@ -1712,8 +1727,10 @@ export default function App() {
   };
 
   const handleDeleteCyberReport = (id: string) => {
-    if (session?.role !== 'Admin') {
-      showToast('Unauthorized: Only Administrators can delete records.', 'error');
+    const item = cyberReports.find((x) => x.id === id);
+    const isOwner = item && session && item.addedBy === session.username;
+    if (session?.role !== 'Admin' && !isOwner) {
+      showToast('Unauthorized: Only Administrators or the record creator can delete records.', 'error');
       return;
     }
     requestDeleteConfirm(
@@ -1729,8 +1746,10 @@ export default function App() {
   };
 
   const handleDeleteMailReport = (id: string) => {
-    if (session?.role !== 'Admin') {
-      showToast('Unauthorized: Only Administrators can delete records.', 'error');
+    const item = mailReports.find((x) => x.id === id);
+    const isOwner = item && session && item.addedBy === session.username;
+    if (session?.role !== 'Admin' && !isOwner) {
+      showToast('Unauthorized: Only Administrators or the record creator can delete records.', 'error');
       return;
     }
     requestDeleteConfirm(
@@ -1746,8 +1765,10 @@ export default function App() {
   };
 
   const handleDeleteTechUpdate = (id: string) => {
-    if (session?.role !== 'Admin') {
-      showToast('Unauthorized: Only Administrators can delete records.', 'error');
+    const item = techUpdates.find((x) => x.id === id);
+    const isOwner = item && session && item.addedBy === session.username;
+    if (session?.role !== 'Admin' && !isOwner) {
+      showToast('Unauthorized: Only Administrators or the record creator can delete records.', 'error');
       return;
     }
     requestDeleteConfirm(
@@ -2646,6 +2667,136 @@ export default function App() {
           <div className="space-y-6 animate-fadeIn" id="dashboard-index-view">
             {/* Minimalist Hero Banner */}
             <PremiumHeroBanner setCurrentView={setCurrentView} />
+
+            {/* Enterprise Quick Access Gateways Row */}
+            <div className="space-y-2.5" id="quick-links-section-container">
+              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-400">
+                <Activity className="w-4 h-4 text-indigo-500 animate-pulse" />
+                <span>Enterprise Quick Gateways</span>
+              </div>
+              
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3" id="quick-links-grid">
+                {/* Link 1: Real Time PRI */}
+                <a
+                  href="http://192.168.51.30"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-slate-900 hover:bg-slate-800/90 border border-slate-800 hover:border-indigo-500/50 p-3 rounded-xl flex flex-col justify-between gap-3 group transition-all duration-200 shadow-md shadow-slate-950/20 cursor-pointer"
+                  id="link-real-time-pri"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="bg-indigo-500/10 p-2 rounded-lg border border-indigo-500/20 text-indigo-400 group-hover:bg-indigo-500/20 group-hover:text-indigo-300 transition-colors">
+                      <Activity className="w-4 h-4 animate-pulse" />
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-indigo-400 transition-colors" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-xs tracking-wide truncate group-hover:text-indigo-300 transition-colors" title="Real Time PRI">Real Time PRI</h4>
+                    <p className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">192.168.51.30</p>
+                  </div>
+                </a>
+
+                {/* Link 2: H8 SSRMS */}
+                <a
+                  href="https://bbmanagers.gtplkcbpl.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-slate-900 hover:bg-slate-800/90 border border-slate-800 hover:border-indigo-500/50 p-3 rounded-xl flex flex-col justify-between gap-3 group transition-all duration-200 shadow-md shadow-slate-950/20 cursor-pointer"
+                  id="link-h8-ssrms"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="bg-blue-500/10 p-2 rounded-lg border border-blue-500/20 text-blue-400 group-hover:bg-blue-500/20 group-hover:text-blue-300 transition-colors">
+                      <Globe className="w-4 h-4" />
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-blue-400 transition-colors" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-xs tracking-wide truncate group-hover:text-blue-300 transition-colors" title="H8 SSRMS">H8 SSRMS</h4>
+                    <p className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">bbmanagers.gtplkcbpl.com</p>
+                  </div>
+                </a>
+
+                {/* Link 3: PRTG NETWORK MONITOR */}
+                <a
+                  href="https://10.10.10.10"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-slate-900 hover:bg-slate-800/90 border border-slate-800 hover:border-indigo-500/50 p-3 rounded-xl flex flex-col justify-between gap-3 group transition-all duration-200 shadow-md shadow-slate-950/20 cursor-pointer"
+                  id="link-prtg-monitor"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="bg-emerald-500/10 p-2 rounded-lg border border-emerald-500/20 text-emerald-400 group-hover:bg-emerald-500/20 group-hover:text-emerald-300 transition-colors">
+                      <Monitor className="w-4 h-4" />
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400 transition-colors" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-xs tracking-wide truncate group-hover:text-emerald-300 transition-colors" title="PRTG NETWORK MONITOR">PRTG MONITOR</h4>
+                    <p className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">10.10.10.10</p>
+                  </div>
+                </a>
+
+                {/* Link 4: Web WhatsApp */}
+                <a
+                  href="https://web.whatsapp.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-slate-900 hover:bg-slate-800/90 border border-slate-800 hover:border-indigo-500/50 p-3 rounded-xl flex flex-col justify-between gap-3 group transition-all duration-200 shadow-md shadow-slate-950/20 cursor-pointer"
+                  id="link-web-whatsapp"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="bg-green-500/10 p-2 rounded-lg border border-green-500/20 text-green-400 group-hover:bg-green-500/20 group-hover:text-green-300 transition-colors">
+                      <MessageSquare className="w-4 h-4" />
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-green-400 transition-colors" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-xs tracking-wide truncate group-hover:text-green-300 transition-colors" title="Web WhatsApp">Web WhatsApp</h4>
+                    <p className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">web.whatsapp.com</p>
+                  </div>
+                </a>
+
+                {/* Link 5: MAC Address Vendors */}
+                <a
+                  href="https://macvendors.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-slate-900 hover:bg-slate-800/90 border border-slate-800 hover:border-indigo-500/50 p-3 rounded-xl flex flex-col justify-between gap-3 group transition-all duration-200 shadow-md shadow-slate-950/20 cursor-pointer"
+                  id="link-mac-vendors"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="bg-amber-500/10 p-2 rounded-lg border border-amber-500/20 text-amber-400 group-hover:bg-amber-500/20 group-hover:text-amber-300 transition-colors">
+                      <Search className="w-4 h-4" />
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-amber-400 transition-colors" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-xs tracking-wide truncate group-hover:text-amber-300 transition-colors" title="MAC Address Vendors">MAC Vendors</h4>
+                    <p className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">macvendors.com</p>
+                  </div>
+                </a>
+
+                {/* Link 6: Live Quality Monitoring System */}
+                <a
+                  href="https://qualityanalystkcbpl-collab.github.io/call-quality"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-slate-900 hover:bg-slate-800/90 border border-slate-800 hover:border-indigo-500/50 p-3 rounded-xl flex flex-col justify-between gap-3 group transition-all duration-200 shadow-md shadow-slate-950/20 cursor-pointer"
+                  id="link-quality-monitoring"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="bg-rose-500/10 p-2 rounded-lg border border-rose-500/20 text-rose-400 group-hover:bg-rose-500/20 group-hover:text-rose-300 transition-colors">
+                      <Shield className="w-4 h-4" />
+                    </div>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-500 group-hover:text-rose-400 transition-colors" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-bold text-xs tracking-wide truncate group-hover:text-rose-300 transition-colors" title="Live Quality Monitoring System">Quality System</h4>
+                    <p className="text-[10px] text-slate-500 font-mono mt-0.5 truncate">qualityanalystkcbpl...</p>
+                  </div>
+                </a>
+              </div>
+            </div>
 
             {/* Metric Summary Widgets: High-level metric blocks representing all 7 dynamic pages */}
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4" id="index-summary-widgets">
