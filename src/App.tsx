@@ -112,8 +112,8 @@ export default function App() {
   const [session, setSession] = useState<UserSession | null>(() => loadState<UserSession | null>('active_session', null));
   const [authLoaded, setAuthLoaded] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>(() => loadState<'light' | 'dark'>('app_theme', 'light'));
-  const [loginEmail, setLoginEmail] = useState('banibratamajumder18@gmail.com');
-  const [loginPassword, setLoginPassword] = useState('password');
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
 
   // Firebase Sign Up state variables
@@ -1781,7 +1781,7 @@ export default function App() {
               Networking Info
             </h1>
             <p className="text-xs text-slate-400 mt-2 font-medium">
-              Enterprise Users Dashboard (Firebase Connect)
+              Enterprise Network Information Dashboard
             </p>
           </div>
 
@@ -1978,7 +1978,7 @@ export default function App() {
                     <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.43-3.43C17.95 1.19 15.24 0 12 0 7.37 0 3.26 2.76 1.29 6.58l3.98 3.13c.95-2.85 3.6-4.96 6.73-4.96z"/>
                   </g>
                 </svg>
-                <span>गूगल অ্যাকাউন্ট দিয়ে লগইন করুন (Google Sign-In)</span>
+                <span>Continue with Google</span>
               </button>
 
 
@@ -2092,28 +2092,11 @@ export default function App() {
             </form>
           )}
 
-          {/* OFFLINE/DEMO BYPASS OPTION */}
-          <div className="mt-5 pt-4 border-t border-slate-800/80 space-y-2 text-center" id="offline-mode-bypass-section">
-            <p className="text-[11px] text-slate-400 font-semibold leading-relaxed">
-              ফায়ারবেস চালু না থাকলে বা ডেটা সেভ করতে সমস্যা হলে:
-            </p>
-            <button
-              type="button"
-              onClick={handleOfflineMode}
-              className="w-full bg-indigo-950/40 hover:bg-indigo-900 border border-slate-800 hover:border-indigo-500 text-indigo-200 font-bold text-xs py-2.5 px-4 rounded-xl flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md shadow-slate-950/40"
-              id="bypass-to-offline-mode"
-            >
-              <Shield className="w-4 h-4 text-indigo-400 animate-pulse" />
-              <span>Continue in Offline Mode (অফলাইন মোড)</span>
-            </button>
-            <p className="text-[9px] text-slate-500 font-semibold leading-normal">
-              Offline mode saves all additions, updates, and deletes directly to your browser's local storage (নিরাপদ ও সহজ).
-            </p>
-          </div>
+
 
           <div className="mt-5 pt-4 border-t border-slate-800 text-center text-[10px] text-slate-500 font-medium flex items-center justify-center gap-1.5">
             <Shield className="w-3.5 h-3.5 text-indigo-500" />
-            <span>Authorized Operations Only. Secured by Firebase Cloud Firestore.</span>
+            <span>Authorized Operations Only. Secured by Admin (Banibrata Majumder).</span>
           </div>
         </div>
       </div>
