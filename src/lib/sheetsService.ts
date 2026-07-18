@@ -54,7 +54,7 @@ export const googleSignIn = async (): Promise<{ user: User; accessToken: string 
     cachedAccessToken = credential.accessToken;
     return { user: result.user, accessToken: cachedAccessToken };
   } catch (error) {
-    console.error('Google Sign-In Error:', error);
+    console.warn('Google Sign-In Error:', error);
     throw error;
   } finally {
     isSigningIn = false;
@@ -62,7 +62,6 @@ export const googleSignIn = async (): Promise<{ user: User; accessToken: string 
 };
 
 export const logout = async () => {
-  await auth.signOut();
   cachedAccessToken = null;
 };
 
@@ -131,7 +130,12 @@ export const findOrCreateSpreadsheet = async (token: string): Promise<string> =>
 
   if (!createRes.ok) {
     const errText = await createRes.text();
-    console.error('Failed to create synchronized Google Spreadsheet:', errText);
+    const isAuthError = createRes.status === 401 || errText.includes('UNAUTHENTICATED') || errText.includes('unauthorized') || errText.includes('expired');
+    if (isAuthError) {
+      console.warn('Failed to create synchronized Google Spreadsheet due to auth expiration:', errText);
+    } else {
+      console.error('Failed to create synchronized Google Spreadsheet:', errText);
+    }
     throw new Error(`Failed to create Google Spreadsheet: ${errText}`);
   }
 
@@ -142,8 +146,14 @@ export const findOrCreateSpreadsheet = async (token: string): Promise<string> =>
   for (const sheetName of Object.keys(SHEET_HEADERS)) {
     try {
       await writeHeaders(spreadsheetId, sheetName, SHEET_HEADERS[sheetName], token);
-    } catch (headerErr) {
-      console.error(`Failed to write headers for sheet ${sheetName}:`, headerErr);
+    } catch (headerErr: any) {
+      const errStr = String(headerErr);
+      const isAuthError = errStr.includes('401') || errStr.includes('UNAUTHENTICATED') || errStr.includes('unauthorized') || errStr.includes('expired');
+      if (isAuthError) {
+        console.warn(`Failed to write headers for sheet ${sheetName} due to auth expiration:`, headerErr);
+      } else {
+        console.error(`Failed to write headers for sheet ${sheetName}:`, headerErr);
+      }
     }
   }
 
@@ -169,24 +179,75 @@ const writeHeaders = async (spreadsheetId: string, sheetName: string, headers: s
   });
 };
 
+// In-memory cache of verified sheets and pending promises to prevent concurrent/redundant requests
+export const verifiedSheetsCache = new Map<string, Set<string>>();
+export const pendingMetadataPromises = new Map<string, Promise<string[]>>();
+
 /**
  * Ensures a sheet tab exists in an existing spreadsheet and has the correct headers.
  */
 export const ensureSheetExistsAndHasHeaders = async (spreadsheetId: string, sheetName: string, headers: string[], token: string) => {
-  // Check if sheet exists
-  const metaUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties(title)`;
-  const metaRes = await fetch(metaUrl, {
-    headers: { Authorization: `Bearer ${token}` }
-  });
-  
-  if (!metaRes.ok) return;
-  const metaData = await metaRes.json();
-  const existingSheets = metaData.sheets?.map((s: any) => s.properties.title) || [];
+  // Check in-memory cache first
+  let cached = verifiedSheetsCache.get(spreadsheetId);
+  if (cached && cached.has(sheetName)) {
+    return;
+  }
+
+  // Coalesce concurrent metadata fetches for the same spreadsheet
+  let existingSheets: string[];
+  if (pendingMetadataPromises.has(spreadsheetId)) {
+    existingSheets = await pendingMetadataPromises.get(spreadsheetId)!;
+  } else {
+    const fetchPromise = (async () => {
+      try {
+        const metaUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}?fields=sheets.properties(title)`;
+        const metaRes = await fetch(metaUrl, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!metaRes.ok) {
+          const errBody = await metaRes.text();
+          throw new Error(`Failed to fetch spreadsheet metadata: ${metaRes.status} ${metaRes.statusText || ''} - ${errBody}`);
+        }
+        const metaData = await metaRes.json();
+        const sheetsList: string[] = metaData.sheets?.map((s: any) => s.properties.title) || [];
+        
+        // Update in-memory cache
+        let cachedSet = verifiedSheetsCache.get(spreadsheetId);
+        if (!cachedSet) {
+          cachedSet = new Set<string>();
+          verifiedSheetsCache.set(spreadsheetId, cachedSet);
+        }
+        sheetsList.forEach(s => cachedSet!.add(s));
+        
+        return sheetsList;
+      } catch (err: any) {
+        const errStr = String(err);
+        const isAuthError = errStr.includes('401') || errStr.includes('UNAUTHENTICATED') || errStr.includes('unauthorized') || errStr.includes('expired') || errStr.includes('Expired');
+        if (isAuthError) {
+          console.warn('Error fetching sheets metadata due to auth expiration:', err);
+        } else {
+          console.error('Error fetching sheets metadata:', err);
+        }
+        throw err;
+      } finally {
+        pendingMetadataPromises.delete(spreadsheetId);
+      }
+    })();
+
+    pendingMetadataPromises.set(spreadsheetId, fetchPromise);
+    existingSheets = await fetchPromise;
+  }
+
+  // Re-verify after cache has been populated
+  cached = verifiedSheetsCache.get(spreadsheetId);
+  if (cached && cached.has(sheetName)) {
+    return;
+  }
 
   if (!existingSheets.includes(sheetName)) {
     // Add missing sheet
     const updateUrl = `https://sheets.googleapis.com/v4/spreadsheets/${spreadsheetId}:batchUpdate`;
-    await fetch(updateUrl, {
+    const addRes = await fetch(updateUrl, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -202,8 +263,24 @@ export const ensureSheetExistsAndHasHeaders = async (spreadsheetId: string, shee
         ]
       })
     });
-    // Write headers
-    await writeHeaders(spreadsheetId, sheetName, headers, token);
+    
+    if (addRes.ok) {
+      await writeHeaders(spreadsheetId, sheetName, headers, token);
+      if (!cached) {
+        cached = new Set<string>();
+        verifiedSheetsCache.set(spreadsheetId, cached);
+      }
+      cached.add(sheetName);
+    } else {
+      const errText = await addRes.text();
+      const isAuthError = addRes.status === 401 || errText.includes('UNAUTHENTICATED') || errText.includes('unauthorized') || errText.includes('expired');
+      if (isAuthError) {
+        console.warn(`Failed to add sheet ${sheetName} due to auth expiration:`, errText);
+      } else {
+        console.error(`Failed to add sheet ${sheetName}:`, errText);
+      }
+      throw new Error(`Failed to add sheet ${sheetName}: ${errText}`);
+    }
   }
 };
 
@@ -363,8 +440,14 @@ export const updateRowInSheet = async (
         values: [newRowValues]
       })
     });
-  } catch (error) {
-    console.error(`Error updating row in Google Sheets (${sheetName}):`, error);
+  } catch (error: any) {
+    const errStr = String(error);
+    const isAuthError = errStr.includes('401') || errStr.includes('UNAUTHENTICATED') || errStr.includes('unauthorized') || errStr.includes('expired');
+    if (isAuthError) {
+      console.warn(`Error updating row in Google Sheets (${sheetName}) due to auth expiration:`, error);
+    } else {
+      console.error(`Error updating row in Google Sheets (${sheetName}):`, error);
+    }
   }
 };
 
@@ -432,8 +515,14 @@ export const deleteRowFromSheet = async (
       })
     });
     console.log(`Successfully deleted row ${itemId} from Google Sheet (${sheetName})`);
-  } catch (error) {
-    console.error(`Error deleting row from Google Sheets (${sheetName}):`, error);
+  } catch (error: any) {
+    const errStr = String(error);
+    const isAuthError = errStr.includes('401') || errStr.includes('UNAUTHENTICATED') || errStr.includes('unauthorized') || errStr.includes('expired');
+    if (isAuthError) {
+      console.warn(`Error deleting row from Google Sheets (${sheetName}) due to auth expiration:`, error);
+    } else {
+      console.error(`Error deleting row from Google Sheets (${sheetName}):`, error);
+    }
   }
 };
 

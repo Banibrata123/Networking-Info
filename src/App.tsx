@@ -316,14 +316,14 @@ export default function App() {
 
   const handleGoogleSheetsDisconnect = async () => {
     try {
-      await sheetsLogout();
+      // Optimistically update states immediately for instantaneous UI feedback
       setGoogleUser(null);
       setGoogleToken(null);
       setSyncSpreadsheetId(null);
       setSyncError(null);
       setSheetsSyncStatus('disconnected');
 
-      // Update Firestore configuration setting linked to false
+      // Update Firestore configuration setting linked to false first while authenticated
       try {
         await setDoc(doc(db, 'global_settings', 'sheets_config'), {
           spreadsheetId: null,
@@ -337,6 +337,7 @@ export default function App() {
         console.error('Failed to clear sheets config in Firestore:', fsErr);
       }
 
+      await sheetsLogout();
       showToast('Google Sheets disconnected.', 'info');
     } catch (err) {
       console.error(err);
@@ -494,11 +495,34 @@ export default function App() {
       setLastSyncedTime(now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
       showToast('All dashboard data synchronized with Google Sheets!', 'success');
     } catch (error: any) {
-      console.error('Google Sheets Sync failed:', error);
-      setSheetsSyncStatus('error');
       const errStr = String(error);
-      setSyncError(error?.message || errStr);
-      showToast('Sync with Google Sheets failed.', 'error');
+      const isAuthError = errStr.includes('401') || 
+                           errStr.includes('UNAUTHENTICATED') || 
+                           errStr.includes('unauthorized') || 
+                           errStr.includes('expired') || 
+                           errStr.includes('invalid credentials') || 
+                           errStr.includes('Expired');
+      if (isAuthError) {
+        console.warn('Google Sheets Sync failed due to auth expiration:', error);
+        setGoogleToken(null);
+        setSheetsSyncStatus('disconnected');
+        setSyncError('Your Google Sheets authorization has expired. Please click "Link Google Sheets" or "Re-authorize Google Sheets" to restore connection.');
+        showToast('Google Sheets session expired. Please re-authorize.', 'error');
+        
+        // Clear token in Firestore as well so others don't use a stale token
+        try {
+          await setDoc(doc(db, 'global_settings', 'sheets_config'), {
+            googleToken: null
+          }, { merge: true });
+        } catch (fsErr) {
+          console.warn('Failed to clear expired token in Firestore:', fsErr);
+        }
+      } else {
+        console.error('Google Sheets Sync failed:', error);
+        setSheetsSyncStatus('error');
+        setSyncError(error?.message || errStr);
+        showToast('Sync with Google Sheets failed.', 'error');
+      }
     }
   };
 
@@ -508,11 +532,23 @@ export default function App() {
       try {
         await appendRowToSheet(syncSpreadsheetId, sheetName, item, googleToken);
       } catch (err: any) {
-        console.error(`On-the-fly append to Google Sheets failed for ${sheetName}:`, err);
         const errStr = String(err);
-        if (errStr.includes('401') || errStr.includes('unauthorized') || errStr.includes('Expired') || errStr.includes('expired')) {
+        const isAuthError = errStr.includes('401') || errStr.includes('unauthorized') || errStr.includes('Expired') || errStr.includes('expired') || errStr.includes('UNAUTHENTICATED');
+        if (isAuthError) {
+          console.warn(`On-the-fly append to Google Sheets failed for ${sheetName} due to auth expiration:`, err);
+          setGoogleToken(null);
           setSheetsSyncStatus('disconnected');
+          setSyncError('Your Google Sheets authorization has expired. Please re-authorize.');
           showToast('Google Sheets authorization expired. Please re-authorize.', 'error');
+          try {
+            await setDoc(doc(db, 'global_settings', 'sheets_config'), {
+              googleToken: null
+            }, { merge: true });
+          } catch (fsErr) {
+            console.warn('Failed to clear expired token in Firestore:', fsErr);
+          }
+        } else {
+          console.error(`On-the-fly append to Google Sheets failed for ${sheetName}:`, err);
         }
       }
     }
@@ -524,11 +560,23 @@ export default function App() {
       try {
         await updateRowInSheet(syncSpreadsheetId, sheetName, itemId, updatedFields, googleToken);
       } catch (err: any) {
-        console.error(`On-the-fly update to Google Sheets failed for ${sheetName}:`, err);
         const errStr = String(err);
-        if (errStr.includes('401') || errStr.includes('unauthorized') || errStr.includes('Expired') || errStr.includes('expired')) {
+        const isAuthError = errStr.includes('401') || errStr.includes('unauthorized') || errStr.includes('Expired') || errStr.includes('expired') || errStr.includes('UNAUTHENTICATED');
+        if (isAuthError) {
+          console.warn(`On-the-fly update to Google Sheets failed for ${sheetName} due to auth expiration:`, err);
+          setGoogleToken(null);
           setSheetsSyncStatus('disconnected');
+          setSyncError('Your Google Sheets authorization has expired. Please re-authorize.');
           showToast('Google Sheets authorization expired. Please re-authorize.', 'error');
+          try {
+            await setDoc(doc(db, 'global_settings', 'sheets_config'), {
+              googleToken: null
+            }, { merge: true });
+          } catch (fsErr) {
+            console.warn('Failed to clear expired token in Firestore:', fsErr);
+          }
+        } else {
+          console.error(`On-the-fly update to Google Sheets failed for ${sheetName}:`, err);
         }
       }
     }
@@ -540,11 +588,23 @@ export default function App() {
       try {
         await deleteRowFromSheet(syncSpreadsheetId, sheetName, itemId, googleToken);
       } catch (err: any) {
-        console.error(`On-the-fly delete from Google Sheets failed for ${sheetName}:`, err);
         const errStr = String(err);
-        if (errStr.includes('401') || errStr.includes('unauthorized') || errStr.includes('Expired') || errStr.includes('expired')) {
+        const isAuthError = errStr.includes('401') || errStr.includes('unauthorized') || errStr.includes('Expired') || errStr.includes('expired') || errStr.includes('UNAUTHENTICATED');
+        if (isAuthError) {
+          console.warn(`On-the-fly delete from Google Sheets failed for ${sheetName} due to auth expiration:`, err);
+          setGoogleToken(null);
           setSheetsSyncStatus('disconnected');
+          setSyncError('Your Google Sheets authorization has expired. Please re-authorize.');
           showToast('Google Sheets authorization expired. Please re-authorize.', 'error');
+          try {
+            await setDoc(doc(db, 'global_settings', 'sheets_config'), {
+              googleToken: null
+            }, { merge: true });
+          } catch (fsErr) {
+            console.warn('Failed to clear expired token in Firestore:', fsErr);
+          }
+        } else {
+          console.error(`On-the-fly delete from Google Sheets failed for ${sheetName}:`, err);
         }
       }
     }
@@ -3213,7 +3273,7 @@ export default function App() {
                               className="w-full py-2 px-4 bg-white hover:bg-rose-50 text-rose-600 hover:text-rose-700 border border-slate-200 hover:border-rose-200 rounded-xl text-[11px] font-bold transition-all duration-150 flex items-center justify-center gap-1 cursor-pointer"
                               id="disconnect-google-sheets-btn"
                             >
-                              <span>Disconnect Google Account</span>
+                              <span>Disconnect Google Sheets</span>
                             </button>
                           </>
                         )}

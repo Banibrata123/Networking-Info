@@ -33,8 +33,7 @@ service cloud.firestore {
 
     // Match global_settings collection
     match /global_settings/{settingId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && isAdmin();
+      allow read, write: if request.auth != null;
     }
   }
 }
